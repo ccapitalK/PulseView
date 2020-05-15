@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.2)
+project(pulseview-core C CXX)
+
+set(SOURCE_FILES
+    pulseview.h
+    pulseview.cpp
+)
+
+add_library(pulseview-core SHARED STATIC ${SOURCE_FILES})
+
+install(TARGETS pulseview-core DESTINATION ${PULSEVIEW_INSTALL_LIB_DIR})
+install(FILES pulseview.h DESTINATION ${PULSEVIEW_INSTALL_INCLUDE_DIR})

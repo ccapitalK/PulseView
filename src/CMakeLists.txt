@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
-project(divider)
+project(pulseview)
 
-add_subdirectory(division)
+add_subdirectory(pulseview-core)
 set(SOURCE_FILES main.cpp)
 
-add_executable(divider ${SOURCE_FILES})
-target_link_libraries(divider division)
-install(TARGETS divider DESTINATION ${DIVISIBLE_INSTALL_BIN_DIR})
+add_executable(pulseview ${SOURCE_FILES})
+target_link_libraries(pulseview pulseview-core)
+install(TARGETS pulseview DESTINATION ${PULSEVIEW_INSTALL_BIN_DIR})
