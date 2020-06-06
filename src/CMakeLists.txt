@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(pulseview)
 
-add_subdirectory(pulseview-core)
+add_subdirectory(pulseview_core)
 set(SOURCE_FILES main.cpp)
 
 add_executable(pulseview ${SOURCE_FILES})
