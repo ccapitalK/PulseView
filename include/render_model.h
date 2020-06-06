@@ -1,0 +1,60 @@
+//
+// Author: Sahan Fernando <sahan.h.fernando@gmail.com>
+// Date: 2020-06-06
+//
+
+#include <cassert>
+#include <complex>
+
+#include <SFML/Graphics.hpp>
+
+#include <pulseview.h>
+
+#pragma once
+
+namespace PulseView {
+
+enum class AudioChannel { Left = 0, Right };
+extern AudioChannel AudioChannels[2];
+
+using S16LESample = int16_t;
+using Complex = std::complex<double>;
+
+struct PCMChunk {
+    void reserveSize(size_t log2NumSamples);
+    void clear();
+    double minInRange(size_t s, size_t e, size_t numSteps) const;
+    double maxInRange(size_t s, size_t e, size_t numSteps) const;
+    void calculateDFT();
+    double getDftValueOverRange(size_t s, size_t e, size_t numSteps) const;
+    std::vector<Complex> samples;
+    std::vector<Complex> dft;
+    size_t log2Size;
+};
+
+struct Frame {
+    Frame() = delete;
+    Frame(size_t logNumSamples);
+    void clear();
+    void finalize();
+    PCMChunk &getChunk(AudioChannel channel) noexcept;
+    const PCMChunk &getChunk(AudioChannel channel) const noexcept;
+    size_t log2Size;
+    size_t numSamples;
+    PCMChunk leftChunk;
+    PCMChunk rightChunk;
+};
+
+class RenderModel {
+  public:
+    RenderModel(sf::RenderWindow &window) : window_(window) {}
+    void drawFrame(const Frame &frame);
+
+  private:
+    sf::RenderWindow &window_;
+    static inline const sf::Color waveColor{255, 255, 255, 255};
+    static inline const sf::Color backgroundColor{29, 116, 239, 255};
+    static inline const sf::Color fftColor{0, 93, 224, 255};
+};
+
+} // namespace PulseView
