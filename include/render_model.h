@@ -7,7 +7,9 @@
 #include <complex>
 
 #include <SFML/Graphics.hpp>
+#include <fftw3.h>
 
+#include <fftw_helper.h>
 #include <pulseview.h>
 
 #pragma once
@@ -25,10 +27,10 @@ struct PCMChunk {
     void clear();
     double minInRange(size_t s, size_t e, size_t numSteps) const;
     double maxInRange(size_t s, size_t e, size_t numSteps) const;
-    void calculateDFT();
+    void calculateDFT(fftw::FFTWHelper &helper);
     double getDftValueOverRange(size_t s, size_t e, size_t numSteps) const;
-    std::vector<Complex> samples;
-    std::vector<Complex> dft;
+    std::vector<double> samples;
+    std::vector<double> dft;
     size_t log2Size;
 };
 
@@ -43,6 +45,7 @@ struct Frame {
     size_t numSamples;
     PCMChunk leftChunk;
     PCMChunk rightChunk;
+    fftw::FFTWHelper fftw;
 };
 
 class RenderModel {
