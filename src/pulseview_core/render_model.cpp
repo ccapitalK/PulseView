@@ -62,7 +62,7 @@ double PCMChunk::getDftValueOverRange(size_t s, size_t e, size_t numSteps) const
     }
     rv /= std::max(i2 - i1, (size_t)1);
     // make the returned value slightly nicer to parse
-    return sqrt(rv)/32.;
+    return std::pow(rv, 0.7) / 32.;
 }
 
 Frame::Frame(size_t logNumSamples)
