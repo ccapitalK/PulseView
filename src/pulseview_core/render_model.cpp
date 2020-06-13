@@ -137,18 +137,6 @@ void RenderModel::drawFrame(const Frame &frame) {
     auto windowDimensions = window_.getSize();
     auto width = windowDimensions.x;
     auto height = windowDimensions.y;
-    // draw the audio waveform
-    for (auto channel : AudioChannels) {
-        auto &chunk = frame.getChunk(channel);
-        sf::VertexArray line(sf::LineStrip, frame.numSamples+1);
-        line[0].position = sf::Vector2f(0., height / 2.);
-        for (auto i = 0u; i < frame.numSamples; ++i) {
-            double x = (i * width) / ((double)frame.numSamples);
-            double y = (height * (1. - chunk.samples[i].real())) / 2.;
-            line[i+1].position = sf::Vector2f(x, y);
-        }
-        window_.draw(line);
-    }
     // draw the fft
     for (auto channel : AudioChannels) {
         const auto &chunk = frame.getChunk(channel);
@@ -169,6 +157,18 @@ void RenderModel::drawFrame(const Frame &frame) {
             }
             window_.draw(rectangle);
         }
+    }
+    // draw the audio waveform
+    for (auto channel : AudioChannels) {
+        auto &chunk = frame.getChunk(channel);
+        sf::VertexArray line(sf::LineStrip, frame.numSamples+1);
+        line[0].position = sf::Vector2f(0., height / 2.);
+        for (auto i = 0u; i < frame.numSamples; ++i) {
+            double x = (i * width) / ((double)frame.numSamples);
+            double y = (height * (1. - chunk.samples[i].real())) / 2.;
+            line[i+1].position = sf::Vector2f(x, y);
+        }
+        window_.draw(line);
     }
 }
 
