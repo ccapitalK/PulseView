@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
 
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
 project(pulseview)
 
 set(CMAKE_CXX_STANDARD 17)
