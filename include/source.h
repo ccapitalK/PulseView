@@ -11,6 +11,7 @@ namespace PulseView::AudioSource {
 
 class Source {
   public:
+    virtual ~Source() = default;
     virtual void populateFrame(PulseView::Frame &frame) = 0;
 };
 

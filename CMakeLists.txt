@@ -1,7 +1,14 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.12)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
+endif()
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
+
+if(ipo_supported)
+    set_property(TARGET pulseview PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
 project(pulseview)

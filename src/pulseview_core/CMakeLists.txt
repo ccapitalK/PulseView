@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 project(pulseview-core C CXX)
 
 set(SOURCE_FILES
+    application.cpp
     fftw_helper.cpp
     pcm_process_source.cpp
     pulseaudio_source.cpp
