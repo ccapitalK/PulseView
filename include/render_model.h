@@ -50,11 +50,13 @@ struct Frame {
 
 class RenderModel {
   public:
-    RenderModel(sf::RenderWindow &window) : window_(window) {}
+    RenderModel(sf::RenderWindow &window);
+    void resize(size_t width, size_t height);
     void drawFrame(const Frame &frame);
 
   private:
     sf::RenderWindow &window_;
+    sf::RenderTexture texture_;
     static inline const sf::Color waveColor{255, 255, 255, 255};
     static inline const sf::Color backgroundColor{29, 116, 239, 255};
     static inline const sf::Color fftColor{0, 93, 224, 255};

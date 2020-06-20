@@ -101,8 +101,22 @@ const PCMChunk &Frame::getChunk(AudioChannel channel) const noexcept {
     }
 }
 
+RenderModel::RenderModel(sf::RenderWindow &window) : window_(window) { texture_.create(1024, 1024); }
+
+void RenderModel::resize(size_t width, size_t height) {
+    auto textureWidth = texture_.getSize().x;
+    sf::FloatRect visibleArea(0, 0, width, height);
+    if (width > textureWidth || height > textureWidth) {
+        while (textureWidth < std::max(width, height)) {
+            textureWidth *= 2;
+        }
+        texture_.create(textureWidth, textureWidth);
+    }
+    window_.setView(sf::View(visibleArea));
+}
+
 void RenderModel::drawFrame(const Frame &frame) {
-    window_.clear(backgroundColor);
+    texture_.clear(backgroundColor);
     auto windowDimensions = window_.getSize();
     auto width = windowDimensions.x;
     auto height = windowDimensions.y;
@@ -124,7 +138,7 @@ void RenderModel::drawFrame(const Frame &frame) {
                 rectangle.setPosition(sf::Vector2f(x1, height - y));
                 rectangle.setSize(sf::Vector2f(x2 - x1, y));
             }
-            window_.draw(rectangle);
+            texture_.draw(rectangle);
         }
     }
     // draw the audio waveform
@@ -137,8 +151,10 @@ void RenderModel::drawFrame(const Frame &frame) {
             double y = (height * (1. - chunk.samples[i])) / 2.;
             line[i + 1].position = sf::Vector2f(x, y);
         }
-        window_.draw(line);
+        texture_.draw(line);
     }
+    texture_.display();
+    window_.draw(sf::Sprite(texture_.getTexture()));
 }
 
 } // namespace PulseView

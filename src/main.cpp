@@ -32,8 +32,7 @@ int main() {
                     break;
                 }
                 case sf::Event::Resized: {
-                    sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
-                    window.setView(sf::View(visibleArea));
+                    model.resize(ev.size.width, ev.size.height);
                     break;
                 }
                 }
