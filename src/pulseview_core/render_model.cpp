@@ -101,22 +101,16 @@ const PCMChunk &Frame::getChunk(AudioChannel channel) const noexcept {
     }
 }
 
-RenderModel::RenderModel(sf::RenderWindow &window) : window_(window) { texture_.create(1024, 1024); }
+RenderModel::RenderModel(sf::RenderWindow &window)
+    : window_(window), quadVertices_(sf::Quads, 0), waveVertices_(sf::LineStrip) {}
 
 void RenderModel::resize(size_t width, size_t height) {
-    auto textureWidth = texture_.getSize().x;
     sf::FloatRect visibleArea(0, 0, width, height);
-    if (width > textureWidth || height > textureWidth) {
-        while (textureWidth < std::max(width, height)) {
-            textureWidth *= 2;
-        }
-        texture_.create(textureWidth, textureWidth);
-    }
     window_.setView(sf::View(visibleArea));
 }
 
 void RenderModel::drawFrame(const Frame &frame) {
-    texture_.clear(backgroundColor);
+    window_.clear(backgroundColor);
     auto windowDimensions = window_.getSize();
     auto width = windowDimensions.x;
     auto height = windowDimensions.y;
@@ -124,37 +118,36 @@ void RenderModel::drawFrame(const Frame &frame) {
     for (auto channel : AudioChannels) {
         const auto &chunk = frame.getChunk(channel);
         const auto numRects = 128u;
-        sf::RectangleShape rectangle;
-        rectangle.setFillColor(fftColor);
+        auto &quads = quadVertices_;
+        quads.resize(4 * numRects);
         for (auto i = 0u; i < numRects; ++i) {
             double value = chunk.getDftValueOverRange(i, i + 1, numRects);
             auto y = value * height / 2.;
             auto x1 = (i * width) / numRects;
             auto x2 = ((i + 1) * width) / numRects;
-            if (channel == AudioChannel::Left) {
-                rectangle.setPosition(sf::Vector2f(x1, 0));
-                rectangle.setSize(sf::Vector2f(x2 - x1, y));
-            } else {
-                rectangle.setPosition(sf::Vector2f(x1, height - y));
-                rectangle.setSize(sf::Vector2f(x2 - x1, y));
-            }
-            texture_.draw(rectangle);
+            auto y1 = channel == AudioChannel::Left ? 0 : height - y;
+            auto y2 = channel == AudioChannel::Left ? y : height;
+            auto *quad = &quads[4 * i];
+            quad[0] = sf::Vertex(sf::Vector2f(x1, y1), fftColor);
+            quad[1] = sf::Vertex(sf::Vector2f(x1, y2), fftColor);
+            quad[2] = sf::Vertex(sf::Vector2f(x2, y2), fftColor);
+            quad[3] = sf::Vertex(sf::Vector2f(x2, y1), fftColor);
         }
+        window_.draw(quads);
     }
     // draw the audio waveform
     for (auto channel : AudioChannels) {
         auto &chunk = frame.getChunk(channel);
-        sf::VertexArray line(sf::LineStrip, frame.numSamples + 1);
-        line[0].position = sf::Vector2f(0., height / 2.);
+        auto &line = waveVertices_;
+        line.resize(frame.numSamples + 1);
+        line[0] = sf::Vertex(sf::Vector2f(0., height / 2.), waveColor);
         for (auto i = 0u; i < frame.numSamples; ++i) {
             double x = (i * width) / ((double)frame.numSamples);
             double y = (height * (1. - chunk.samples[i])) / 2.;
-            line[i + 1].position = sf::Vector2f(x, y);
+            line[i + 1] = sf::Vertex(sf::Vector2f(x, y), waveColor);
         }
-        texture_.draw(line);
+        window_.draw(line);
     }
-    texture_.display();
-    window_.draw(sf::Sprite(texture_.getTexture()));
 }
 
 } // namespace PulseView

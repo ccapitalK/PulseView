@@ -56,7 +56,8 @@ class RenderModel {
 
   private:
     sf::RenderWindow &window_;
-    sf::RenderTexture texture_;
+    sf::VertexArray quadVertices_;
+    sf::VertexArray waveVertices_;
     static inline const sf::Color waveColor{255, 255, 255, 255};
     static inline const sf::Color backgroundColor{29, 116, 239, 255};
     static inline const sf::Color fftColor{0, 93, 224, 255};
