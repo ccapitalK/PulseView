@@ -5,6 +5,10 @@
 *.o
 *.obj
 
+# Ninja build files
+*.ninja
+.ninja*
+
 # Precompiled Headers
 *.gch
 *.pch
