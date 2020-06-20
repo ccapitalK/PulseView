@@ -16,3 +16,15 @@ A simple SFML based oscilloscope for pulseaudio. Also renders DFTs for each chan
 
 Currently, this application does not have any way of choosing which audio source to use.
 It is however possible to choose an audio source through the use of pavucontrol.
+
+# Building
+
+Run these commands to create the binary at \<project-dir\>/build/src/pulseview.
+
+```
+git submodule update --init
+mkdir build
+cd build
+cmake ..
+make
+```
