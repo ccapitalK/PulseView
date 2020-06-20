@@ -4,6 +4,7 @@ project(pulseview-core C CXX)
 set(SOURCE_FILES
     fftw_helper.cpp
     pcm_process_source.cpp
+    pulseaudio_source.cpp
     pulseview.cpp
     render_model.cpp
 )

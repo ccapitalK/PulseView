@@ -30,7 +30,7 @@ PCMProcessSource::PCMProcessSource() {
         procArgv.push_back(static_cast<const char *>("--raw"));
         procArgv.push_back(static_cast<const char *>("--record"));
         procArgv.push_back(static_cast<const char *>("--latency-msec=10"));
-        procArgv.push_back(static_cast<const char *>("--format=s16le"));
+        procArgv.push_back(static_cast<const char *>("--format=s16ne"));
         procArgv.push_back(static_cast<const char *>("--rate=61440"));
         procArgv.push_back(nullptr);
         auto argv = const_cast<char **>(&procArgv[0]);
@@ -51,7 +51,7 @@ PCMProcessSource::~PCMProcessSource() noexcept {
 
 void PCMProcessSource::populateFrame(PulseView::Frame &frame) {
     frame.clear();
-    const size_t bytesToRead = numChannels_ * sizeof(PulseView::S16LESample) * frame.numSamples;
+    const size_t bytesToRead = numChannels_ * sizeof(PulseView::S16NESample) * frame.numSamples;
     std::vector<char> buffer(bytesToRead);
     size_t bytesRead{0};
     while (bytesRead < bytesToRead) {
@@ -62,8 +62,8 @@ void PCMProcessSource::populateFrame(PulseView::Frame &frame) {
             bytesRead += readResult;
         }
     }
-    const auto *samples = reinterpret_cast<PulseView::S16LESample *>(buffer.data());
-    const double maxSize = std::numeric_limits<PulseView::S16LESample>::max();
+    const auto *samples = reinterpret_cast<PulseView::S16NESample *>(buffer.data());
+    const double maxSize = std::numeric_limits<PulseView::S16NESample>::max();
     for (size_t i = 0; i < frame.numSamples; ++i) {
         const auto *offset = samples + numChannels_ * i;
         const auto leftSample = ((double)offset[0]) / maxSize;

@@ -6,16 +6,17 @@
 #pragma once
 #include "pulseview.h"
 #include "render_model.h"
+#include "source.h"
 
 namespace PulseView::AudioSource {
 
-class PCMProcessSource {
+class PCMProcessSource : public Source {
   public:
     PCMProcessSource();
     ~PCMProcessSource();
     void populateFrame(PulseView::Frame &frame);
 
-  protected:
+  private:
     std::string processCMDLine_;
     static const size_t numChannels_ = 2;
     int processFD_;

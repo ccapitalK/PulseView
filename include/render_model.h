@@ -19,7 +19,7 @@ namespace PulseView {
 enum class AudioChannel { Left = 0, Right };
 extern AudioChannel AudioChannels[2];
 
-using S16LESample = int16_t;
+using S16NESample = int16_t;
 using Complex = std::complex<double>;
 
 struct PCMChunk {
