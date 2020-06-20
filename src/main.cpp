@@ -35,6 +35,7 @@ void run(PulseView::AudioSource::Source &source) {
                 model.resize(ev.size.width, ev.size.height);
                 break;
             }
+            default: break;
             }
         }
 

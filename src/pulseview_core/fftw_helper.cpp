@@ -23,13 +23,12 @@ void FFTWHelper::calculateDFT(const std::vector<double> &in, std::vector<double>
     assert(out.size() == size);
     assert(fftw_in.size() == size);
     assert(fftw_out.size() == size);
-    size_t z1{}, z2{};
-    for (auto i = 0; i < size; ++i) {
+    for (auto i = 0u; i < size; ++i) {
         fftw_in[i].value[0] = in[i];
         fftw_in[i].value[1] = 0;
     }
     fftw_execute(&*plan);
-    for (auto i = 0; i < size; ++i) {
+    for (auto i = 0u; i < size; ++i) {
         out[i] = fftw_out[i].value[0];
     }
 }

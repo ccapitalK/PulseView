@@ -15,7 +15,6 @@ namespace PulseView::AudioSource {
 
 PCMProcessSource::PCMProcessSource() {
     int fildes[2];
-    int status;
     if (pipe(fildes) < 0) {
         PulseView::fail_errno("Failed to call pipe(): ");
     }
