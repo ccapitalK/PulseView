@@ -12,20 +12,22 @@
 #include "pcm_process_source.h"
 #include "pulseaudio_source.h"
 #include "pulseview.h"
-#include "source.h"
 #include "render_model.h"
+#include "source.h"
 
 namespace PulseView {
 
 class Application {
-public:
-    Application();
+  public:
+    Application() = delete;
+    Application(sf::RenderWindow &window, AudioSource::Source &source, Frame &frame);
     void run();
-private:
-    sf::RenderWindow window_;
+
+  private:
+    sf::RenderWindow &window_;
     RenderModel model_;
-    Frame frame_;
-    AudioSource::PulseAudioSource source_;
+    Frame &frame_;
+    AudioSource::Source &source_;
 };
 
 } // namespace PulseView

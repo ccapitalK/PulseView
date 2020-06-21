@@ -8,6 +8,9 @@
 
 namespace PulseView {
 
+Application::Application(sf::RenderWindow &window, AudioSource::Source &source, Frame &frame)
+    : window_{window}, model_{window_}, frame_{frame}, source_{source} {}
+
 void Application::run() {
     sf::Event ev;
     bool running{true};
@@ -23,16 +26,14 @@ void Application::run() {
                 model_.resize(ev.size.width, ev.size.height);
                 break;
             }
-            default: break;
+            default:
+                break;
             }
         }
 
         model_.drawFrame(frame_);
         window_.display();
     }
-}
-
-Application::Application() : window_(sf::VideoMode(800,600), "PulseView"), model_(window_), frame_(11ull) {
 }
 
 } // namespace PulseView

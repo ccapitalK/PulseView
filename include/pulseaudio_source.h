@@ -14,11 +14,12 @@ namespace PulseView::AudioSource {
 
 class PulseAudioSource : public Source {
   public:
-    PulseAudioSource();
+    PulseAudioSource() = delete;
+    PulseAudioSource(size_t audioRate);
     PulseAudioSource(const PulseAudioSource &) = delete;
-    PulseAudioSource(PulseAudioSource &&) = delete;
+    PulseAudioSource(PulseAudioSource &&);
     PulseAudioSource &operator=(const PulseAudioSource &) = delete;
-    PulseAudioSource &operator=(PulseAudioSource &&) = delete;
+    PulseAudioSource &operator=(PulseAudioSource &&);
     ~PulseAudioSource() noexcept;
     void populateFrame(PulseView::Frame &frame);
 
