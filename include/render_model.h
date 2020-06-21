@@ -55,6 +55,7 @@ class RenderModel {
     void drawFrame(const Frame &frame);
 
   private:
+    void prepareVertexArrays(size_t numQuadVertices, size_t numWaveVertices);
     sf::RenderWindow &window_;
     sf::VertexArray quadVertices_;
     sf::VertexArray waveVertices_;

@@ -109,29 +109,50 @@ void RenderModel::resize(size_t width, size_t height) {
     window_.setView(sf::View(visibleArea));
 }
 
+void RenderModel::prepareVertexArrays(size_t numQuadVertices, size_t numWaveVertices) {
+    const auto oldNumQuadVertices = quadVertices_.getVertexCount();
+    const auto oldNumWaveVertices = waveVertices_.getVertexCount();
+    if (oldNumQuadVertices != numQuadVertices) {
+        quadVertices_.resize(numQuadVertices);
+    }
+    if (oldNumWaveVertices != numWaveVertices) {
+        waveVertices_.resize(numWaveVertices);
+    }
+    if (oldNumQuadVertices < numQuadVertices) {
+        for (auto i = oldNumQuadVertices; i < numQuadVertices; ++i) {
+            quadVertices_[i].color = fftColor;
+        }
+    }
+    if (oldNumWaveVertices < numWaveVertices) {
+        for (auto i = oldNumWaveVertices; i < numWaveVertices; ++i) {
+            waveVertices_[i].color = waveColor;
+        }
+    }
+}
+
 void RenderModel::drawFrame(const Frame &frame) {
     window_.clear(backgroundColor);
     auto windowDimensions = window_.getSize();
     auto width = windowDimensions.x;
     auto height = windowDimensions.y;
-    // draw the fft
+    const auto numDFTRects = 128u;
+    prepareVertexArrays(4 * numDFTRects, frame.numSamples + 1);
+    // draw the dft
     for (auto channel : AudioChannels) {
         const auto &chunk = frame.getChunk(channel);
-        const auto numRects = 128u;
         auto &quads = quadVertices_;
-        quads.resize(4 * numRects);
-        for (auto i = 0u; i < numRects; ++i) {
-            double value = chunk.getDftValueOverRange(i, i + 1, numRects);
+        for (auto i = 0u; i < numDFTRects; ++i) {
+            double value = chunk.getDftValueOverRange(i, i + 1, numDFTRects);
             auto y = value * height / 2.;
-            auto x1 = (i * width) / numRects;
-            auto x2 = ((i + 1) * width) / numRects;
+            auto x1 = (i * width) / numDFTRects;
+            auto x2 = ((i + 1) * width) / numDFTRects;
             auto y1 = channel == AudioChannel::Left ? 0 : height - y;
             auto y2 = channel == AudioChannel::Left ? y : height;
             auto *quad = &quads[4 * i];
-            quad[0] = sf::Vertex(sf::Vector2f(x1, y1), fftColor);
-            quad[1] = sf::Vertex(sf::Vector2f(x1, y2), fftColor);
-            quad[2] = sf::Vertex(sf::Vector2f(x2, y2), fftColor);
-            quad[3] = sf::Vertex(sf::Vector2f(x2, y1), fftColor);
+            quad[0].position = sf::Vector2f(x1, y1);
+            quad[1].position = sf::Vector2f(x1, y2);
+            quad[2].position = sf::Vector2f(x2, y2);
+            quad[3].position = sf::Vector2f(x2, y1);
         }
         window_.draw(quads);
     }
@@ -139,12 +160,11 @@ void RenderModel::drawFrame(const Frame &frame) {
     for (auto channel : AudioChannels) {
         auto &chunk = frame.getChunk(channel);
         auto &line = waveVertices_;
-        line.resize(frame.numSamples + 1);
-        line[0] = sf::Vertex(sf::Vector2f(0., height / 2.), waveColor);
+        line[0].position = sf::Vector2f(0., height / 2.);
         for (auto i = 0u; i < frame.numSamples; ++i) {
-            double x = (i * width) / ((double)frame.numSamples);
+            double x = ((i + 1) * width) / ((double)frame.numSamples);
             double y = (height * (1. - chunk.samples[i])) / 2.;
-            line[i + 1] = sf::Vertex(sf::Vector2f(x, y), waveColor);
+            line[i + 1].position = sf::Vector2f(x, y);
         }
         window_.draw(line);
     }
