@@ -13,12 +13,14 @@
 int main(int argc, char *argv[]) {
     cxxopts::Options options{argv[0], "Simple graphical oscilloscope for pulseaudio"};
     try {
-        auto width = 800, height = 600;
-        auto log2FrameWidth = 11u;
+        size_t width = 800, height = 600;
+        size_t log2FrameWidth = 11;
+        size_t frameRate = 60;
 
         using DimensionVec = std::vector<size_t>;
         options.add_options()("h,help", "Show help message", cxxopts::value<bool>())(
-            "d,dimensions", "Initial window dimensions", cxxopts::value<DimensionVec>())(
+            "d,dimensions", "Initial window dimensions",
+            cxxopts::value<DimensionVec>())("f,frame-rate", "Number of updates per second", cxxopts::value<size_t>())(
             "w,log2-frame-width", "Log in base 2 of the number of samples shown on the screen at once",
             cxxopts::value<size_t>());
         auto result = options.parse(argc, argv);
@@ -40,10 +42,16 @@ int main(int argc, char *argv[]) {
                 throw cxxopts::OptionParseException("log2-frame-width is out of range [8..12]");
             }
         }
+        if (result.count("frame-rate")) {
+            frameRate = result["frame-rate"].as<size_t>();
+            if (frameRate < 1 || frameRate > 120) {
+                throw cxxopts::OptionParseException("frame-rate is out of range [1..120]");
+            }
+        }
 
         sf::RenderWindow window{sf::VideoMode(width, height), "PulseView"};
         PulseView::Frame frame{log2FrameWidth};
-        PulseView::AudioSource::PulseAudioSource source{60 * (1u << log2FrameWidth)};
+        PulseView::AudioSource::PulseAudioSource source{frameRate * (1u << log2FrameWidth)};
 
         PulseView::Application app{window, source, frame};
         app.run();
